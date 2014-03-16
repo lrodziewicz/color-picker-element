@@ -1,0 +1,9 @@
+.current-color {
+	width: 15px;
+	height: 15px;
+	border: 1px solid #000;
+}
+
+input[name=rgb-hex]:invalid {
+	border: 1px solid red;
+}

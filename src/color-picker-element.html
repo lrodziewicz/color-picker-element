@@ -1,0 +1,19 @@
+<polymer-element name="color-picker" attributes="color show-hls">
+    <script src="./color-picker-element.js"></script>
+    <template>
+        <link rel="stylesheet" href="./color-picker-element.css">
+    
+        <div style="background: #{{color}}" class="current-color"></div>
+        
+        <label>RGB #</label>
+        <input name="rgb-hex" type="text" value="{{ color }}" pattern="/^(?:[0-9a-fA-F]{3}){1,2}$/">
+
+        <br />
+
+        <template bind if="{{ showHls }}">
+            H <input type="number" value="{{ hls.h }}" name="hls-h" min="0" max="255"/><br/>
+            L <input type="number" value="{{ hls.l }}" name="hls-l" min="0" max="255"/><br />
+            S <input type="number" value="{{ hls.s }}" name="hls-s" min="0" max="255"/><br />  
+        </template>
+    </template>
+</polymer-element>
