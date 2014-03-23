@@ -1,8 +1,12 @@
+<link rel="import" href="./color-scale.html">
+
 <polymer-element name="color-picker" attributes="color show-hls">
     <script src="./color-picker-element.js"></script>
     <template>
         <link rel="stylesheet" href="./color-picker-element.css">
     
+        <color-scale></color-scale>
+
         <div style="background: #{{color}}" class="current-color"></div>
         
         <label>RGB #</label>
