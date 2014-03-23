@@ -57,7 +57,7 @@
     };
 
     // Found at: http://stackoverflow.com/a/2348659
-    var rgbToHls = function (r, g, b) {
+    var rgbToHsl = function (r, g, b) {
         r /= 255, g /= 255, b /= 255;
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
         var h, s, l = (max + min) / 2;
@@ -86,22 +86,28 @@
 
     Polymer ('color-picker', {
         ready: function () {
-            this.hls = { h: 0, l: 0, s: 0 };
+            this.rgba =[0, 0, 0, 0];
+            this.hsl = new Int8Array([0, 0, 0]);
         },
         publish: {
             color: 'f0f0f0',
-            showHls: true
+            alpha: 1.0,
+            showRgb: true,
+            showHsl: true
         },
         colorChanged: function () {
-            var hls = rgbToHls.apply(this, this.rgb);
-            this.hls = { h: hls[0], l: hls[1], s: hls[2] };
+            this.rgba = hexToRgb(parseInt(this.color, 16)).concat([this.alpha]); 
         },
-        hlsChanged: function () {
-            var rgb = hslToRgb([this.hls.h, this.hls.l, this.hls.s]);
-            this.color = rgbToHex.apply(this, rgb);
+        rgbaChanged: function () {
+            this.hsl = rgbToHsl.apply(this, this.rgba.slice(0, 3));
+            this.color = rgbToHex.apply(this, this.rgba.slice(0, 3));            
         },
+        // hslChanged: function () {
+        //     var rgb = hslToRgb(this.hsl);
+        //     this.rgba = rgb.concat([this.alpha]);
+        // },
         get hex () {
-            return parseInt(this.color, 16);
+            return rgbToHex.apply(this, this.rgba.slice(0, 3));
         },
         get rgb () {
             return hexToRgb(this.hex);
