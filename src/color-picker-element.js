@@ -7,10 +7,10 @@
         var g = hex >> 8 & 0xFF;
         var b = hex & 0xFF;
         
-        return [r,g,b];
+        return [r, g, b];
     };
 
-    var rgbToHex = function(r, g, b) {
+    var rgbToHex = function (r, g, b) {
         var bin = r << 16 | g << 8 | b;
         
         return (function(h){
@@ -85,8 +85,8 @@
     };
 
     Polymer ('color-picker', {
-        ready: function () {
-            this.rgba =[0, 0, 0, 0];
+        created: function () {
+            this.rgb = [0, 0, 0];
             this.hsl = new Int8Array([0, 0, 0]);
         },
         publish: {
@@ -96,21 +96,18 @@
             showHsl: true
         },
         colorChanged: function () {
-            this.rgba = hexToRgb(parseInt(this.color, 16)).concat([this.alpha]); 
+            this.rgb = hexToRgb(parseInt(this.color, 16)); 
         },
-        rgbaChanged: function () {
-            this.hsl = rgbToHsl.apply(this, this.rgba.slice(0, 3));
-            this.color = rgbToHex.apply(this, this.rgba.slice(0, 3));            
+        rgbChanged: function () {
+            this.hsl = rgbToHsl.apply(this, this.rgb);
+            this.color = rgbToHex.apply(this, this.rgb);            
         },
         // hslChanged: function () {
         //     var rgb = hslToRgb(this.hsl);
         //     this.rgba = rgb.concat([this.alpha]);
         // },
         get hex () {
-            return rgbToHex.apply(this, this.rgba.slice(0, 3));
-        },
-        get rgb () {
-            return hexToRgb(this.hex);
+            return rgbToHex.apply(this, this.rgb);
         }
     });
 })();

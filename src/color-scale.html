@@ -1,0 +1,85 @@
+<polymer-element name="color-scale" attributes="rgb width height">
+    <template>
+        <canvas id="gradient" width="{{ width }}" height="{{ height }}"></canvas>
+    </template>
+    <script>
+    (function () {
+        Polymer('color-scale', {
+            publish: {
+                width: 256,
+                height: 256
+            },
+            created: function () {
+                this.rgb = [0, 0, 0];
+            },
+            ready: function () {
+                this.ctx = this.$.gradient.getContext('2d');
+                this.paintGradient();
+            },
+            rgbChanged: function () {
+                this.paintGradient();
+            },
+            paintGradient: function () {
+                var imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+                    
+                var buf = new ArrayBuffer(imageData.data.length);
+                var buf8 = new Uint8ClampedArray(buf);
+                var data = new Uint32Array(buf);
+                    
+                // Determine whether Uint32 is little- or big-endian.
+                data[1] = 0x0a0b0c0d;
+                    
+                var isLittleEndian = true;
+                if (buf[4] === 0x0a && buf[5] === 0x0b && buf[6] === 0x0c &&
+                    buf[7] === 0x0d) {
+                    isLittleEndian = false;
+                }
+
+                var x = 0, y = 0, rgb = [], yToHeightRev = 0.0, xToWidth = 0.0;
+                // Linear gradient formula: color[i] = colorA[i] + val * (colorB[i] - colorA[i])
+                if (isLittleEndian) {
+                    for (y = 0; y < this.height; ++y) {
+                        yToHeightRev = (this.height - y)/this.height;
+
+                        for (x = 0; x < this.width; ++x) {
+                            xToWidth = x/this.width;
+
+                            rgb[0] = yToHeightRev * (255 + xToWidth * (this.rgb[0] - 255));
+                            rgb[1] = yToHeightRev * (255 + xToWidth * (this.rgb[1] - 255));
+                            rgb[2] = yToHeightRev * (255 + xToWidth * (this.rgb[2] - 255));
+
+                            data[y * this.width + x] =
+                                (255    << 24) |    // alpha
+                                (rgb[2] << 16) |    // blue
+                                (rgb[1] <<  8) |    // green
+                                 rgb[0];            // red
+                        }
+                    }
+                } else {
+                    for (y = 0; y < this.height; ++y) {
+                        yToHeightRev = (this.height - y)/this.height;
+
+                        for (x = 0; x < this.width; ++x) {
+                            xToWidth = x/this.width;
+
+                            rgb[0] = yToHeightRev * (255 + xToWidth * (this.rgb[0] - 255));
+                            rgb[1] = yToHeightRev * (255 + xToWidth * (this.rgb[1] - 255));
+                            rgb[2] = yToHeightRev * (255 + xToWidth * (this.rgb[2] - 255));
+
+                            data[y * this.width + x] =
+                                (rgb[0] << 24) |    // red
+                                (rgb[1] << 16) |    // green
+                                (rgb[2] <<  8) |    // blue
+                                 255;               // alpha
+                        }
+                    }
+                }
+
+                imageData.data.set(buf8);
+
+                this.ctx.putImageData(imageData, 0, 0);
+            }
+        });
+    })();
+    </script>
+</polymer-element
