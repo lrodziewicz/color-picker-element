@@ -17,7 +17,9 @@
                 this.paintGradient();
             },
             rgbChanged: function () {
-                this.paintGradient();
+                this.async(function () {
+                    this.paintGradient();
+                }, null, 500);
             },
             paintGradient: function () {
                 var imageData = this.ctx.getImageData(0, 0, this.width, this.height);

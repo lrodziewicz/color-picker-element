@@ -100,7 +100,7 @@
         },
         rgbChanged: function () {
             this.hsl = rgbToHsl.apply(this, this.rgb);
-            this.color = rgbToHex.apply(this, this.rgb);            
+            //this.color = rgbToHex.apply(this, this.rgb);            
         },
         // hslChanged: function () {
         //     var rgb = hslToRgb(this.hsl);
