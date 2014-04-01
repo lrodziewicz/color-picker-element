@@ -85,6 +85,7 @@
     };
 
     Polymer ('color-picker', {
+        colorPosition: 0,
         created: function () {
             this.rgb = [0, 0, 0];
             this.hsl = new Int8Array([0, 0, 0]);
@@ -101,6 +102,9 @@
         rgbChanged: function () {
             this.hsl = rgbToHsl.apply(this, this.rgb);
             //this.color = rgbToHex.apply(this, this.rgb);            
+        },
+        colorPositionChanged: function (oldValue, newValue) {
+            this.rgb = this.$.rainbow.getColorAtPosition(newValue);
         },
         // hslChanged: function () {
         //     var rgb = hslToRgb(this.hsl);

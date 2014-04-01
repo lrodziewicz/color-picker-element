@@ -7,3 +7,9 @@
 input[name=rgb-hex]:invalid {
 	border: 1px solid red;
 }
+
+input#color-position {
+	height: 255px;
+	width: 10px;
+	-webkit-appearance: slider-vertical;
+}
