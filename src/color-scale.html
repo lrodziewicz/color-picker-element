@@ -10,18 +10,27 @@
                 height: 256
             },
             created: function () {
+                this.prevRgb = [-1, -1, -1];
                 this.rgb = [0, 0, 0];
             },
             ready: function () {
                 this.ctx = this.$.gradient.getContext('2d');
-                this.paintGradient();
+
+                window.requestAnimationFrame(this.paintGradient.bind(this));
             },
             rgbChanged: function () {
-                this.async(function () {
-                    this.paintGradient();
-                }, null, 500);
+                console.log('rgb changed');
+                console.log(this.prevRgb, this.rgb);
             },
             paintGradient: function () {
+                if (this.rgb[0] === this.prevRgb[0] &&
+                    this.rgb[1] === this.prevRgb[1] &&
+                    this.rgb[2] === this.prevRgb[2] ) {
+                    window.requestAnimationFrame(this.paintGradient.bind(this));
+                    return;
+                }
+                this.prevRgb = this.rgb.slice();
+
                 var imageData = this.ctx.getImageData(0, 0, this.width, this.height);
                     
                 var buf = new ArrayBuffer(imageData.data.length);
@@ -80,6 +89,8 @@
                 imageData.data.set(buf8);
 
                 this.ctx.putImageData(imageData, 0, 0);
+
+                window.requestAnimationFrame(this.paintGradient.bind(this));
             }
         });
     })();
