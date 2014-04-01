@@ -1,0 +1,142 @@
+<polymer-element name="color-rainbow" attributes="rgb width height">
+    <template>
+        <canvas id="gradient" width="{{ width }}" height="{{ height }}"></canvas>
+    </template>
+    <script>
+    (function () {
+        'use strict';
+
+        Polymer('color-rainbow', {
+            publish: {
+                width: 20,
+                height: 256
+            },
+            created: function () {
+            },
+            ready: function () {
+                this.ctx = this.$.gradient.getContext('2d');
+
+                this.initializeData();
+                this.paintGradient();
+            },
+            initializeData: function () {
+                this.imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+                    
+                this.buf = new ArrayBuffer(this.imageData.data.length);
+                this.buf8 = new Uint8ClampedArray(this.buf);
+                this.data = new Uint32Array(this.buf);
+                    
+                // Determine whether Uint32 is little- or big-endian.
+                this.data[1] = 0x0a0b0c0d;
+                    
+                this.isLittleEndian = true;
+                if (this.buf[4] === 0x0a && this.buf[5] === 0x0b && this.buf[6] === 0x0c &&
+                    this.buf[7] === 0x0d) {
+                    this.isLittleEndian = false;
+                }
+            },
+            paintGradient: function () {
+                var x = 0, y = 0, rgb = [], yToHeightRev = 0.0, xToWidth = 0.0;
+                // Linear gradient formula: color[i] = colorA[i] + val * (colorB[i] - colorA[i])
+                if (this.isLittleEndian) {
+                    for (y = 0; y < this.height; ++y) {
+                        yToHeightRev = (this.height - y)/this.height;
+                        rgb = this.getColorAtPosition(yToHeightRev);
+
+                        for (x = 0; x < this.width; ++x) {
+
+                            this.data[y * this.width + x] =
+                                (255    << 24) |    // alpha
+                                (rgb[2] << 16) |    // blue
+                                (rgb[1] <<  8) |    // green
+                                 rgb[0];            // red
+                        }
+                    }
+                } else {
+                    for (y = 0; y < this.height; ++y) {
+                        yToHeightRev = (this.height - y)/this.height;
+                        rgb = this.getColorAtPosition(yToHeightRev);
+
+                        for (x = 0; x < this.width; ++x) {
+
+                            this.data[y * this.width + x] =
+                                (rgb[0] << 24) |    // red
+                                (rgb[1] << 16) |    // green
+                                (rgb[2] <<  8) |    // blue
+                                 255;               // alpha
+                        }
+                    }
+                }
+
+                this.imageData.data.set(this.buf8);
+
+                this.ctx.putImageData(this.imageData, 0, 0);
+            },
+
+            /**
+             * Ported from: http://en.wikibooks.org/wiki/Color_Theory/Color_gradient#Cpp_version
+             * This function gives 1D linear RGB color gradient 
+             * color is proportional to position 
+             * position  <0;1> 
+             * position means position of color in color gradient
+             */
+            getColorAtPosition: function (position) {
+                // if position > 1 then we have repetition of colors
+                // it maybe useful
+                if (position > 1) {
+                    position = position - Math.floor(position);
+                }
+
+                var R, G, B;
+                var nmax = 6; // number of color bars
+                var m = nmax * position;
+                var n = Math.floor(m); // integer of m
+                var f = m - n;  // fraction of m
+                var t = Math.floor(f*255);
+                          
+                switch (n) {
+                   case 0: {
+                      R = 255;
+                      G = t;
+                      B = 0;
+                       break;
+                    };
+                   case 1: {
+                      R = 255 - t;
+                      G = 255;
+                      B = 0;
+                       break;
+                    };
+                   case 2: {
+                      R = 0;
+                      G = 255;
+                      B = t;
+                       break;
+                    };
+                   case 3: {
+                      R = 0;
+                      G = 255 - t;
+                      B = 255;
+                       break;
+                    };
+                   case 4: {
+                      R = t;
+                      G = 0;
+                      B = 255;
+                       break;
+                    };
+                   case 5: {
+                      R = 255;
+                      G = 0;
+                      B = 255 - t;
+                       break;
+                    };
+                 
+                };
+             
+                return [R, G, B];
+            }
+        });
+    })();
+    </script>
+</polymer-element>

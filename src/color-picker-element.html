@@ -1,4 +1,5 @@
 <link rel="import" href="./color-scale.html">
+<link rel="import" href="./color-rainbow.html">
 
 <polymer-element name="color-picker" attributes="color show-hls">
     <script src="./color-picker-element.js"></script>
@@ -6,6 +7,8 @@
         <link rel="stylesheet" href="./color-picker-element.css">
     
         <color-scale id="scale" rgb="{{rgb}}"></color-scale>
+
+        <color-rainbow></color-rainbow>
 
         <div style="background: #{{color}}" class="current-color"></div>
         
