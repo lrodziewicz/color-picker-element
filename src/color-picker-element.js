@@ -97,10 +97,10 @@
             showRgb: true,
             showHsl: true
         },
-        colorFocus: function (event) {
+        colorFocus: function (e) {
             this.isColorEdited = true;
         },
-        colorFocusOut: function (event) {
+        colorFocusOut: function (e) {
             this.isColorEdited = false;
         },
         colorChanged: function () {

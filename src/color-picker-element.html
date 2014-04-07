@@ -5,16 +5,16 @@
     <script src="./color-picker-element.js"></script>
     <template>
         <link rel="stylesheet" href="./color-picker-element.css">
-    
+
         <color-scale id="scale" rgb="{{rgb}}"></color-scale>
 
         <color-rainbow id="rainbow"></color-rainbow>
         <input type="range" min="0" max="1" step="0.01" id="color-position" value={{colorPosition}}/>
 
         <div style="background: #{{color}}" class="current-color"></div>
-        
+
         <label>RGB #</label>
-        <input name="rgb-hex" type="text" value="{{ color }}" pattern="/^(?:[0-9a-fA-F]{3}){1,2}$/" on-focusin="{{colorFocus}}" on-focusout="{{colorFocusOut}}"/>
+        <input name="rgb-hex" type="text" value="{{ color }}" pattern="^(?:[0-9a-fA-F]{3}){1,2}$" on-focus="{{colorFocus}}" on-blur="{{colorFocusOut}}"/>
 
         <br />
 
@@ -38,10 +38,10 @@
                     R <input type="number" value="{{ rgb[0] }}" name="rgb-r" min="0" max="255"/>
                 </label>
                 <label>
-                    G <input type="number" value="{{ rgb[1] }}" name="rgb-g" min="0" max="255"/>        
+                    G <input type="number" value="{{ rgb[1] }}" name="rgb-g" min="0" max="255"/>
                 </label>
                 <label>
-                    B <input type="number" value="{{ rgb[2] }}" name="rgb-b" min="0" max="255"/>        
+                    B <input type="number" value="{{ rgb[2] }}" name="rgb-b" min="0" max="255"/>
                 </label>
             </fieldset>
         </template>
