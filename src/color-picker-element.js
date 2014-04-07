@@ -6,13 +6,13 @@
         var r = hex >> 16;
         var g = hex >> 8 & 0xFF;
         var b = hex & 0xFF;
-        
+
         return [r, g, b];
     };
 
     var rgbToHex = function (r, g, b) {
         var bin = r << 16 | g << 8 | b;
-        
+
         return (function(h){
             return new Array(7-h.length).join('0') + h;
         })(bin.toString(16).toUpperCase());
@@ -86,6 +86,7 @@
 
     Polymer ('color-picker', {
         colorPosition: 0,
+        isColorEdited: false,
         created: function () {
             this.rgb = [0, 0, 0];
             this.hsl = new Int8Array([0, 0, 0]);
@@ -96,19 +97,27 @@
             showRgb: true,
             showHsl: true
         },
+        colorFocus: function (event) {
+            this.isColorEdited = true;
+        },
+        colorFocusOut: function (event) {
+            this.isColorEdited = false;
+        },
         colorChanged: function () {
-            this.rgb = hexToRgb(parseInt(this.color, 16)); 
+            this.rgb = hexToRgb(parseInt(this.color, 16));
         },
         rgbChanged: function () {
             this.hsl = rgbToHsl.apply(this, this.rgb);
-            //this.color = rgbToHex.apply(this, this.rgb);            
+
+            if (!this.isColorEdited) {
+               this.color = rgbToHex.apply(this, this.rgb);
+            }
         },
         colorPositionChanged: function (oldValue, newValue) {
             this.rgb = this.$.rainbow.getColorAtPosition(newValue);
         },
         // hslChanged: function () {
         //     var rgb = hslToRgb(this.hsl);
-        //     this.rgba = rgb.concat([this.alpha]);
         // },
         get hex () {
             return rgbToHex.apply(this, this.rgb);

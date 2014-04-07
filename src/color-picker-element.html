@@ -14,7 +14,7 @@
         <div style="background: #{{color}}" class="current-color"></div>
         
         <label>RGB #</label>
-        <input name="rgb-hex" type="text" value="{{ color }}" pattern="/^(?:[0-9a-fA-F]{3}){1,2}$/">
+        <input name="rgb-hex" type="text" value="{{ color }}" pattern="/^(?:[0-9a-fA-F]{3}){1,2}$/" on-focusin="{{colorFocus}}" on-focusout="{{colorFocusOut}}"/>
 
         <br />
 
