@@ -1,6 +1,6 @@
 <polymer-element name="color-scale" attributes="rgb width height">
     <template>
-        <canvas id="gradient" width="{{ width }}" height="{{ height }}"></canvas>
+        <canvas id="gradient" width="{{ width }}" height="{{ height }}" style="background-color: rgb({{rgb[0]}}, {{rgb[1]}}, {{rgb[2]}})"></canvas>
     </template>
     <script>
     (function () {
@@ -23,14 +23,14 @@
             },
             initializeData: function () {
                 this.imageData = this.ctx.getImageData(0, 0, this.width, this.height);
-                    
+
                 this.buf = new ArrayBuffer(this.imageData.data.length);
                 this.buf8 = new Uint8ClampedArray(this.buf);
                 this.data = new Uint32Array(this.buf);
-                    
+
                 // Determine whether Uint32 is little- or big-endian.
                 this.data[1] = 0x0a0b0c0d;
-                    
+
                 this.isLittleEndian = true;
                 if (this.buf[4] === 0x0a && this.buf[5] === 0x0b && this.buf[6] === 0x0c &&
                     this.buf[7] === 0x0d) {
@@ -48,24 +48,27 @@
                 // Store previous values used for painting
                 this.prevRgb = this.rgb.slice();
 
-                var x = 0, y = 0, rgb = [], yToHeightRev = 0.0, xToWidth = 0.0;
+                var x = 0, y = 0, rgba = [], yToHeightRev = 0.0, yToHeight = 0.0, xToWidth = 0.0, xToWidthRev = 0.0;
                 // Linear gradient formula: color[i] = colorA[i] + val * (colorB[i] - colorA[i])
                 if (this.isLittleEndian) {
                     for (y = 0; y < this.height; ++y) {
+                        yToHeight = y/this.height;
                         yToHeightRev = (this.height - y)/this.height;
 
                         for (x = 0; x < this.width; ++x) {
                             xToWidth = x/this.width;
+                            xToWidthRev = (this.width - x)/this.width;
 
-                            rgb[0] = yToHeightRev * (255 + xToWidth * (this.rgb[0] - 255));
-                            rgb[1] = yToHeightRev * (255 + xToWidth * (this.rgb[1] - 255));
-                            rgb[2] = yToHeightRev * (255 + xToWidth * (this.rgb[2] - 255));
+                            rgba[0] = yToHeightRev * (255 + xToWidth * - 255);
+                            rgba[1] = yToHeightRev * (255 + xToWidth * - 255);
+                            rgba[2] = yToHeightRev * (255 + xToWidth * - 255);
+                            rgba[3] = 255 + yToHeightRev * (xToWidth * -255);
 
                             this.data[y * this.width + x] =
-                                (255    << 24) |    // alpha
-                                (rgb[2] << 16) |    // blue
-                                (rgb[1] <<  8) |    // green
-                                 rgb[0];            // red
+                                (rgba[3] << 24) |    // alpha
+                                (rgba[2] << 16) |    // blue
+                                (rgba[1] <<  8) |    // green
+                                 rgba[0];            // red
                         }
                     }
                 } else {
@@ -75,15 +78,16 @@
                         for (x = 0; x < this.width; ++x) {
                             xToWidth = x/this.width;
 
-                            rgb[0] = yToHeightRev * (255 + xToWidth * (this.rgb[0] - 255));
-                            rgb[1] = yToHeightRev * (255 + xToWidth * (this.rgb[1] - 255));
-                            rgb[2] = yToHeightRev * (255 + xToWidth * (this.rgb[2] - 255));
+                            rgba[0] = yToHeightRev * (255 + xToWidth * (this.rgb[0] - 255));
+                            rgba[1] = yToHeightRev * (255 + xToWidth * (this.rgb[1] - 255));
+                            rgba[2] = yToHeightRev * (255 + xToWidth * (this.rgb[2] - 255));
+                            rgba[3] = 255 + yToHeightRev * (xToWidth * -255);
 
                             this.data[y * this.width + x] =
-                                (rgb[0] << 24) |    // red
-                                (rgb[1] << 16) |    // green
-                                (rgb[2] <<  8) |    // blue
-                                 255;               // alpha
+                                (rgba[0] << 24) |    // red
+                                (rgba[1] << 16) |    // green
+                                (rgba[2] <<  8) |    // blue
+                                 rgba[3];            // alpha
                         }
                     }
                 }
@@ -92,7 +96,7 @@
 
                 this.ctx.putImageData(this.imageData, 0, 0);
 
-                window.requestAnimationFrame(this.paintGradient.bind(this));
+                //window.requestAnimationFrame(this.paintGradient.bind(this));
             }
         });
     })();
